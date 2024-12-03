@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex</title>
+</head>
+<body>
+    {% include 'partials/header.html' %}
+    <h1>Search for a Pokémon!</h1>
+    
+    <div>
+        <form action="/pokedex" method="get">
+            <input type="text" name="name" placeholder="Enter Pokémon name" required><br>
+            <label>
+                <input type="checkbox" name="favorite"> Add to Favorites<br><br>
+            </label>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    {% if pokemon %}
+        <h2>{{ pokemon.name }}</h2>
+        <img src="{{ pokemon.sprites.front_default }}" alt="{{ pokemon.name }}">
+        <p>Id: {{ pokemon.id }}</p>
+        <p>Height: {{ pokemon.height }}</p>
+        <p>Weight: {{ pokemon.weight }}</p>
+    {% endif %}
+    
+    {% include 'partials/footer.html' %}
+</body>
+</html>
