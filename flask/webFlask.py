@@ -1,11 +1,66 @@
-from flask import Flask, render_template, request
+from pysss import password
+
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_bootstrap import Bootstrap5
+from databaseModel import database, User, bcrypt
 import requests
 
 
 # create an instance of Flask
 app = Flask(__name__)
 bootstrap = Bootstrap5(app)
+
+# configuration sql for flask
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+database.init_app(app)
+@app.before_first_request
+def createTables():
+    database.create_all()
+
+# need to change the routing of home to go to a sign in / signup page
+
+
+# route to signup to link
+@app.route('/signup', methods = ['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        # check if th e user exists in the database
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        if existing_user:
+            flash('Username or email already exists! Try again', 'error')
+            return redirect(url_for('signup'))
+
+    # add a new user
+        new_user = User(username = username, email = email, password = password)
+        database.session.add(new_user)
+        database.session.commit()
+        flash('Account created succesfully login in now', 'success')
+        return redirect(url_for('login'))
+    return render_template('partials/signup.html')
+
+
+@app.route('/login', methods = ['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # check user info
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            session['user_id'] = user.id
+            flash('Login successful', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('incorrect username or password', 'error')
+
+    return render_template('partials/login')
 
 # Data storage for favorites
 favoritesN = []

@@ -3,7 +3,5 @@
 
 # need to import the tcgdex api for the pokemon
 
-
-
-print("hello")
+app = Flask
 
