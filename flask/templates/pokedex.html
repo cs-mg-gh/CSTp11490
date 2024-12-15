@@ -12,20 +12,21 @@
     <div>
         <form action="/pokedex" method="get">
             <input type="text" name="name" placeholder="Enter Pokémon name" required><br>
-            <label>
-                <input type="checkbox" name="favorite"> Add to Favorites<br><br>
-            </label>
             <button type="submit">Search</button>
         </form>
     </div>
 
-    {% if pokemon %}
-        <h2>{{ pokemon.name }}</h2>
-        <img src="{{ pokemon.sprites.front_default }}" alt="{{ pokemon.name }}">
-        <p>Id: {{ pokemon.id }}</p>
-        <p>Height: {{ pokemon.height }}</p>
-        <p>Weight: {{ pokemon.weight }}</p>
-    {% endif %}
+    {% for card in pokemon %}
+    <h2>{{ card.name }}</h2>
+    <img src="{{ card.image }}/low.webp" alt="{{ card.name }}">
+    <p>Id: {{ card.id }}</p>
+
+    <form action="/cart" method="post">
+        <input type="hidden" name="card_id" value="{{ card.id }}">
+        <button type="submit">Add to Shopping Cart</button>
+    </form>
+    {% endfor %}
+
     
     {% include 'partials/footer.html' %}
 </body>
