@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+</head>
+<body>
+    {% include 'partials/header.html' %}
+    <h3>Shopping Cart</h3>
+    {% for pokemon in checkedOut %}
+        <p>{{ pokemon.name }}</p>
+        <img src="{{ pokemon.image }}/low.webp" alt="{{ pokemon.name }}">
+    {% endfor %}
+    {% include 'partials/footer.html' %}
+</body>
+</html>

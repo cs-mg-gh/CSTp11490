@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex</title>
+</head>
+<body>
+    {% include 'partials/header.html' %}
+    <h1>Search for a Pokémon!</h1>
+    
+    <div>
+        <form action="/pokedex" method="get">
+            <input type="text" name="name" placeholder="Enter Pokémon name" required><br>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    {% for card in pokemon %}
+    <h2>{{ card.name }}</h2>
+    <img src="{{ card.image }}/low.webp" alt="{{ card.name }}">
+    <p>Id: {{ card.id }}</p>
+
+    <form action="/cart" method="post">
+        <input type="hidden" name="card_id" value="{{ card.id }}">
+        <button type="submit">Add to Shopping Cart</button>
+    </form>
+    {% endfor %}
+
+    
+    {% include 'partials/footer.html' %}
+</body>
+</html>

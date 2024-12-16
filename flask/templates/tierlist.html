@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Tier List</title>
+</head>
+<body>
+    {% include 'partials/header.html' %}
+    <h1>Pokémon Tier List</h1><br><br>
+
+    {% for tier in ['S', 'A', 'B', 'C', 'F'] %}
+        <h2>{{ tier }} Tier</h2>
+        {% if pokemonTL[tier] %}
+            {% for pokemon in pokemonTL[tier] %}
+                <p>{{ pokemon.name }}</p>
+                <img src="{{ pokemon.sprites.front_default }}" alt="{{ pokemon.name }}">
+            {% endfor %}
+        {% else %}
+            <p>No Pokémon in this tier</p>
+        {% endif %}
+        <hr>
+        <br>
+    {% endfor %}
+    
+    {% include 'partials/footer.html' %}
+</body>
+</html>
