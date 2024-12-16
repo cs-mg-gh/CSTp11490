@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_bootstrap5 import Bootstrap
 from tcgdexsdk import TCGdex
+from databaseModel import database, User, bcrypt
 import requests
 
 tcgdex = TCGdex("en")
@@ -13,6 +14,62 @@ bootstrap = Bootstrap(app)
 # Data storage for favorites
 checkedOutN = []
 checkedOut = []
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# set up database
+@app.before_first_request
+def create_tables():
+    database.create_all()
+
+#signup route
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        # Check if user exists
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        if existing_user:
+            flash('Username or email already exists', 'error')
+            return redirect(url_for('signup'))
+
+        # Add new user
+        new_user = User(username=username, email=email, password=password)
+        database.session.add(new_user)
+        database.session.commit()
+        flash('Account created successfully.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('partials/signup.html')
+
+#login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Check user credentials
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            session['user_id'] = user.id
+            flash('Login successful!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Invalid username or password.', 'error')
+
+    return render_template('partials/login.html')
+
+#logout route
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('login'))
 
 @app.route('/')
 def home():
