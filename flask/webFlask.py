@@ -1,7 +1,8 @@
+from urllib import response
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_bootstrap5 import Bootstrap
 from tcgdexsdk import TCGdex
-from databaseModel import database, User, bcrypt
+from databaseModel import database, User, bcrypt, ShoppingCart, Card
 import requests
 
 tcgdex = TCGdex("en")
@@ -76,11 +77,59 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
 
+# Home route
 @app.route('/')
 def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('index.html')
+
+# Search route
+@app.route('/search', methods=['GET'])
+def search():
+    # search for either set or name
+    searh_term = request.args.get('search_term', '')
+    search_type = request.args.get('search_type', 'name')
+    cards = []
+
+    # try to find specfic search query
+    try:
+        if search_type == 'name':
+            response = requests.get(f'https://api.tcgdex.net/v2/en/cards?name={search_term}')
+        elif search_type == 'set':
+            response = requests.get(f'https://api.tcgdex.net/v2/en/sets/{search_term}')
+
+        response.raise_for_status()
+        cards = response.json()
+        return render_template('search.html', cards = cards, searh_term = searh_term)
+    except requests.exceptions.RequestException:
+        return render_template('search.html', cards = None, error = "No results found")
+
+# addind to cart route
+@app.route('/add_to_cart', methods = ['POSt'])
+def add_to_cart():
+    # login check
+    if 'user_id' not in session:
+        flash('You mush be logged in')
+        return redirect(url_for('login'))
+
+    card_id = request.form.get('card_id')
+    if not card_id:
+        flash('No card selscted')
+        return redirect(url_for('search'))
+
+    existing_item = ShoppingCart.query.filter_by(user_id = session.get('user_id'), card_id = card_id).first()
+    if existing_item:
+        flash('Card already added to cart')
+        return redirect(url_for('search'))
+    
+    # add new card
+    new_item = ShoppingCart(user_id = session.get('user_id'), card_id = card_id)
+    database.session.add(new_item)
+    database.session.commit()
+    flash('Card added to your cart')
+    return(redirect(url_for('search')))
+
 
 @app.route('/pokedex', methods=['GET'])
 def pokedex():
