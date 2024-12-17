@@ -15,15 +15,20 @@ bootstrap = Bootstrap(app)
 checkedOutN = []
 checkedOut = []
 
+# Flask Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = "supersecretkey"  # Add a secret key for sessions and flash messages
+
+# Initialize database and bcrypt with the app
+database.init_app(app)
+bcrypt.init_app(app)
 
 # set up database
-@app.before_first_request
-def create_tables():
+with app.app_context():
     database.create_all()
 
-#signup route
+# Signup route
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -44,9 +49,9 @@ def signup():
         flash('Account created successfully.', 'success')
         return redirect(url_for('login'))
 
-    return render_template('partials/signup.html')
+    return render_template('signup.html')
 
-#login route
+# Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -62,9 +67,9 @@ def login():
         else:
             flash('Invalid username or password.', 'error')
 
-    return render_template('partials/login.html')
+    return render_template('login.html')
 
-#logout route
+# Logout route
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)

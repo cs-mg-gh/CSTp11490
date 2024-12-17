@@ -7,7 +7,7 @@ from flask_bcrypt import Bcrypt
 database = SQLAlchemy()
 bcrypt = Bcrypt()
 
-class User(database.databaseModel):
+class User(database.Model):
     # setting up basic rules
     # id, username, and email gave to be unique and not null
     # password doesnt have to be unique but cant be left blank
