@@ -78,6 +78,8 @@ def logout():
 
 @app.route('/')
 def home():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
     return render_template('index.html')
 
 @app.route('/pokedex', methods=['GET'])
