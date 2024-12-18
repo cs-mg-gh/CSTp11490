@@ -16,8 +16,8 @@
     <div class="row justify-content-center">
         {% for pokemon in checkedOut %}
         <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card bg-dark border-light shadow-sm text-white" style="height: 100%; max-width: 18rem;">
-                <img src="{{ pokemon.image }}/low.webp" class="card-img-top" alt="{{ pokemon.name }}" style="height: 200px; object-fit: cover;">
+            <div class="card bg-dark border-light shadow-sm text-white" style="height: 100%;">
+                <img src="{{ pokemon.image }}/low.webp" class="card-img-top" alt="{{ pokemon.name }}">
                 <div class="card-body p-2 text-center">
                     <h5 class="card-title" style="font-size: 1rem;">{{ pokemon.name }}</h5>
                 </div>
