@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_bootstrap5 import Bootstrap
-from tcgdexsdk import TCGdex
+# from tcgdexsdk import TCGdex
 from databaseModel import database, User, bcrypt
 import requests
 
-tcgdex = TCGdex("en")
-
-# create an instance of Flask
+# tcgdex = TCGdex("en")
+#
+# # create an instance of Flask
 app = Flask(__name__)
 
 bootstrap = Bootstrap(app)

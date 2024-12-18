@@ -1,11 +1,32 @@
-<header>
-    <a href ="/">Home</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <!-- Branding -->
+        <a class="navbar-brand" href="/">PokePage</a>
 
-    <a href ="/pokedex">Pokedex</a>
+        <!-- Toggler for Mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <a href ="/browseBySet">Search By Set</a>
-
-    <a href ="/cart">Shopping Cart</a>
-
-    <a href ="/tierlist">Objective Tier List</a>
-</header>
+        <!-- Collapsible Navbar Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pokedex">Pokedex</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/browseBySet">Search By Set</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cart">Shopping Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tierlist">Objective Tier List</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,17 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <title>Shopping Cart</title>
 </head>
-<body>
-    {% include 'partials/header.html' %}
-    <h3>Shopping Cart</h3>
-    {% for pokemon in checkedOut %}
-        <p>{{ pokemon.name }}</p>
-        <img src="{{ pokemon.image }}/low.webp" alt="{{ pokemon.name }}">
-    {% endfor %}
-    {% include 'partials/footer.html' %}
+<body class="bg-dark text-white">
+{% include 'partials/header.html' %}
+
+<div class="container mt-5">
+    <h1 class="display-6 text-center mb-4">Shopping Cart</h1>
+
+    <div class="row justify-content-center">
+        {% for pokemon in checkedOut %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card bg-dark border-light shadow-sm text-white" style="height: 100%; max-width: 18rem;">
+                <img src="{{ pokemon.image }}/low.webp" class="card-img-top" alt="{{ pokemon.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body p-2 text-center">
+                    <h5 class="card-title" style="font-size: 1rem;">{{ pokemon.name }}</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- if cart is empty-->
+    {% if not checkedOut %}
+    <div class="alert alert-warning text-center mt-4" role="alert">
+        Your shopping cart is empty!
+    </div>
+    {% endif %}
+</div>
+
+{% include 'partials/footer.html' %}
 </body>
 </html>
