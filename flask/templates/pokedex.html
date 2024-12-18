@@ -11,6 +11,7 @@
 {% include 'partials/header.html' %}
 
 <div class="container mt-5 text-center">
+    <!-- Title -->
     <h1 class="display-4 mb-4">Search for a Pokémon!</h1>
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -23,12 +24,12 @@
 
     <div class="row">
         {% for card in pokemon %}
-        <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card bg-dark border-light shadow-sm text-white" style="height: 100%; max-width: 18rem;">
-                <img src="{{ card.image }}/low.webp" class="card-img-top" alt="{{ card.name }}" style="height: 200px; object-fit: cover;">
-                <div class="card-body p-2">
-                    <h5 class="card-title" style="font-size: 1rem;">{{ card.name }}</h5>
-                    <p class="card-text" style="font-size: 0.9rem;">ID: {{ card.id }}</p>
+        <div class="col-md-3 mb-4">
+            <div class="card bg-dark border-light shadow-sm text-white" style="height: 100%;">
+                <img src="{{ card.image }}/low.webp" class="card-img-top" alt="{{ card.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ card.name }}</h5>
+                    <p class="card-text">ID: {{ card.id }}</p>
                     <form action="/cart" method="post">
                         <input type="hidden" name="card_id" value="{{ card.id }}">
                         <button type="submit" class="btn btn-success btn-sm w-100">Add to Shopping Cart</button>
