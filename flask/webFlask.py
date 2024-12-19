@@ -4,6 +4,19 @@ from flask_bootstrap5 import Bootstrap
 from tcgdexsdk import TCGdex
 from databaseModel import database, User, bcrypt, ShoppingCart, Card
 import requests
+from functools import wraps
+
+
+# user verfication decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('You need to log in to access this page.', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 # tcgdex = TCGdex("en")
 #
@@ -79,10 +92,10 @@ def logout():
 
 # Home route
 @app.route('/')
+@login_required
 def home():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
     return render_template('index.html')
+
 
 # Search route
 @app.route('/search', methods=['GET'])
@@ -106,7 +119,7 @@ def search():
         return render_template('search.html', cards = None, error = "No results found")
 
 # addind to cart route
-@app.route('/add_to_cart', methods = ['POSt'])
+@app.route('/add_to_cart', methods = ['POST'])
 def add_to_cart():
     # login check
     if 'user_id' not in session:
@@ -147,31 +160,47 @@ def pokedex():
     except requests.exceptions.RequestException:
         return render_template('pokedex.html', pokemon=None, checkedOut=checkedOut, error="Pokémon not found. Try another name!")
 
-@app.route('/cart', methods=['POST'])
+@app.route('/cart', methods=['POST', 'GET'])
 def cart():
-    card_id = request.form.get('card_id')
+    if 'user_id' not in session:
+        flash('You must be logged in to access the cart.', 'error')
+        return redirect(url_for('login'))
 
-    # Check if the card is already in the favorites list
-    if card_id and card_id not in [card['id'] for card in checkedOut]:
+    user_id = session.get('user_id')
+
+    if request.method == 'POST':
+        card_id = request.form.get('card_id')
+        if not card_id:
+            flash('No card selected.', 'error')
+            return redirect(url_for('search'))
+
+        # Check if the card is already in the cart
+        existing_item = ShoppingCart.query.filter_by(user_id=user_id, card_id=card_id).first()
+        if existing_item:
+            flash('Card already in your cart.', 'info')
+        else:
+            # Add the card to the shopping cart
+            new_item = ShoppingCart(user_id=user_id, card_id=card_id)
+            database.session.add(new_item)
+            database.session.commit()
+            flash('Card added to your cart.', 'success')
+
+    # Fetch all cards in the user's cart
+    cart_items = ShoppingCart.query.filter_by(user_id=user_id).all()
+    cards = []
+
+    # Fetch card details for each card in the cart
+    for item in cart_items:
         try:
-            # Fetch card details from the API
-            response = requests.get(f'https://api.tcgdex.net/v2/en/cards/{card_id}')
+            response = requests.get(f'https://api.tcgdex.net/v2/en/cards/{item.card_id}')
             response.raise_for_status()
             card = response.json()
-
-            # Add card to the favorites list
-            checkedOut.append(card)
-            checkedOutN.append(card['name'])
-
-
+            cards.append(card)
         except requests.exceptions.RequestException:
-            return redirect(url_for('pokedex', error="Could not add card to favorites."))
+            flash(f"Could not retrieve details for card ID {item.card_id}.", 'error')
 
-    return redirect(url_for('pokedex'))
+    return render_template('cart.html', cards=cards)
 
-@app.route('/cart', methods=['GET'])
-def favorite_pokemon():
-    return render_template('cart.html', checkedOut=checkedOut)
 
 @app.route('/tierlist', methods=['GET'])
 def tier_list():
